@@ -11,6 +11,9 @@
     </string>
 
     <string name="feature_prompt">Choose a Feature</string>
+    <string name="gps_network_not_enabled">Not Enabled</string>
+    <string name="open_location_settings">Open Location Setting</string>
+    <string name="Cancel">Cancel</string>
 
     <string-array name="country_arrays">
         <item>Toilet</item>

@@ -1,11 +1,20 @@
 package com.example.sanket.googlemaps;
 
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -28,8 +37,53 @@ import static com.google.android.gms.wearable.DataMap.TAG;
 public class MainActivity extends Activity {
 
     private final int SPLASH_DISPLAY_LENGTH = 1000;
-    GoogleApiClient mGoogleApiClient;
+    ProgressBar progressBar;
+    Context context;
+    LocationManager locationManager ;
+    boolean GpsStatus ;
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        CheckGpsStatus() ;
+
+        if(GpsStatus == true)
+        {
+            //check.setText("Location Services Is Enabled");
+            new Handler().postDelayed(new Runnable(){
+                @Override
+                public void run() {
+                    // Create an Intent that will start the Menu-Activity.
+                    Intent mainIntent = new Intent(MainActivity.this,MapsActivity.class);
+                    MainActivity.this.startActivity(mainIntent);
+                    MainActivity.this.finish();
+                }
+            }, SPLASH_DISPLAY_LENGTH);
+            progressBar.setVisibility(View.VISIBLE);
+        }else {
+            //check.setText("Location Services Is Disabled");
+            //startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            final AlertDialog.Builder builder =
+                    new AlertDialog.Builder(MainActivity.this);
+            final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+            final String message = "Enable either GPS or any other location"
+                    + " service to find current location.  Click OK to go to"
+                    + " location services settings to let you do so.";
+
+
+            builder.setMessage(message)
+                    .setPositiveButton("OK",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface d, int id) {
+                                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                }
+                            });
+
+            builder.create().show();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +91,53 @@ public class MainActivity extends Activity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        progressBar = (ProgressBar) findViewById(R.id.button);
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+        context = getApplicationContext();
+
+               /*
+                CheckGpsStatus() ;
+
+                if(GpsStatus == true)
+                {
+                    //check.setText("Location Services Is Enabled");
+                    new Handler().postDelayed(new Runnable(){
+                        @Override
+                        public void run() {
+                            // Create an Intent that will start the Menu-Activity.
+                            Intent mainIntent = new Intent(MainActivity.this,MapsActivity.class);
+                            MainActivity.this.startActivity(mainIntent);
+                            MainActivity.this.finish();
+                        }
+                    }, SPLASH_DISPLAY_LENGTH);
+                    progressBar.setVisibility(View.VISIBLE);
+                }else {
+                    //check.setText("Location Services Is Disabled");
+                    //startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    final AlertDialog.Builder builder =
+                            new AlertDialog.Builder(MainActivity.this);
+                    final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
+                    final String message = "Enable either GPS or any other location"
+                            + " service to find current location.  Click OK to go to"
+                            + " location services settings to let you do so.";
 
 
+                    builder.setMessage(message)
+                            .setPositiveButton("OK",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface d, int id) {
+                                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                        }
+                                    });
+
+                    builder.create().show();
+                }
+                */
+
+
+
+
+        /*
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
@@ -53,6 +147,13 @@ public class MainActivity extends Activity {
                 MainActivity.this.finish();
             }
         }, SPLASH_DISPLAY_LENGTH);
+        */
+    }
+
+    private void CheckGpsStatus() {
+        locationManager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+
+        GpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 
 }

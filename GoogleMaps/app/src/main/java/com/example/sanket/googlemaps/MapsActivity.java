@@ -2,6 +2,7 @@ package com.example.sanket.googlemaps;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -31,6 +32,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
 import android.Manifest;
 import android.text.Html;
 import android.text.TextUtils;
@@ -291,20 +294,29 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
     @Override
     public void onPlaceSelected(Place place) {
         Log.i(LOG_TAG, "Place Selected: " + place.getName());
-        latitude = place.getLatLng().latitude;
-        longitude = place.getLatLng().longitude;
+        double placelatitude = place.getLatLng().latitude;
+        double placelongitude = place.getLatLng().longitude;
         //Toast.makeText(getApplicationContext(), "Lat: "+ latitude+" Long: "+ longitude, Toast.LENGTH_LONG).show();
         if (!TextUtils.isEmpty(place.getAttributions())){
             attributionsTextView.setText(Html.fromHtml(place.getAttributions().toString()));
         }
-        LatLng latLng = new LatLng(latitude,longitude);
+        LatLng placelatLng = new LatLng(placelatitude,placelongitude);
         MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
+        markerOptions.position(placelatLng);
         markerOptions.title((String) place.getName());
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(placelatLng, 17.0f));
+
+        LatLng latLng = new LatLng(latitude, longitude);
+
+        mMap.addPolyline(new PolylineOptions().add(
+                latLng,
+                placelatLng)
+                .width(5)
+                .color(Color.GREEN)
+        );
 
     }
 
