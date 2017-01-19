@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "827602314422",
+    "firebase_url": "https://project--13813447019795659.firebaseio.com",
+    "project_id": "project--13813447019795659",
+    "storage_bucket": "project--13813447019795659.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827602314422:android:6bebf7359a2046ae",
+        "android_client_info": {
+          "package_name": "com.example.sanket.googlemaps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "827602314422-32uujmv3h4q4gpjtctpeci3ddrd6lkk1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sanket.googlemaps",
+            "certificate_hash": "9719F0B0B3609384C53CD16DE7DF1380C761A5E6"
+          }
+        },
+        {
+          "client_id": "827602314422-jrplbbccmu8hm9sbarl8ht1i91l2qp0f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0qekeVH5R-jj4k9lhmLGHjOasIjoe9QA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "827602314422-jrplbbccmu8hm9sbarl8ht1i91l2qp0f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
