@@ -43,6 +43,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements PlaceSelectionListener, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -116,6 +117,7 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
                     == PackageManager.PERMISSION_GRANTED) {
                 buildGoogleApiClient();
                 mMap.setMyLocationEnabled(true);
+
             }
         }
         else {
@@ -165,6 +167,31 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
 
         //Place current location marker
          LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            String data = extras.getString("AddedImage");
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            markerOptions.title(data);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            mCurrLocationMarker = mMap.addMarker(markerOptions);
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
+        }
+        latitude = location.getLatitude();
+        longitude = location.getLongitude();
+
+
+
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        List<Address> addresses = null;
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String cityName = addresses.get(0).getAddressLine(0);
+        Toast.makeText(getApplicationContext(), "Current Area: "+ cityName, Toast.LENGTH_SHORT).show();
         addFeature.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -266,20 +293,21 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
         Log.i(LOG_TAG, "Place Selected: " + place.getName());
         latitude = place.getLatLng().latitude;
         longitude = place.getLatLng().longitude;
-        Toast.makeText(getApplicationContext(), "Lat: "+ latitude+" Long: "+ longitude, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "Lat: "+ latitude+" Long: "+ longitude, Toast.LENGTH_LONG).show();
         if (!TextUtils.isEmpty(place.getAttributions())){
             attributionsTextView.setText(Html.fromHtml(place.getAttributions().toString()));
         }
         LatLng latLng = new LatLng(latitude,longitude);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        markerOptions.title("Current Position");
+        markerOptions.title((String) place.getName());
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
 
     }
+
 
     @Override
     public void onError(Status status) {

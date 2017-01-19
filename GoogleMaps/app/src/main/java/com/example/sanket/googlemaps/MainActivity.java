@@ -43,18 +43,8 @@ public class MainActivity extends Activity {
                 .requestEmail()
                 .build();
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(MainActivity.this , new GoogleApiClient.OnConnectionFailedListener() {
-                    @Override
-                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
-                    }
-                } /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-
-
-        /*new Handler().postDelayed(new Runnable(){
+        new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
                 // Create an Intent that will start the Menu-Activity.
@@ -62,11 +52,7 @@ public class MainActivity extends Activity {
                 MainActivity.this.startActivity(mainIntent);
                 MainActivity.this.finish();
             }
-        }, SPLASH_DISPLAY_LENGTH);*/
-    }
-    private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        }, SPLASH_DISPLAY_LENGTH);
     }
 
 }

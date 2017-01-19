@@ -10,44 +10,32 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.example.sanket.googlemaps.AddUserInfo">
 
-    <TextView
-        android:text="What can you provide ? "
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="199dp"
-        android:textSize="30sp"
-        android:id="@+id/textView" />
+        android:orientation="horizontal">
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:hint="Name"
-        android:ems="10"
-        android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="48dp"
-        android:id="@+id/editText" />
+        <Button
+            android:id="@+id/buttonChoose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Choose" />
 
-    <Button
-        android:text="Show"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignLeft="@+id/doneButton"
-        android:layout_alignStart="@+id/doneButton"
-        android:id="@+id/showDatabase" />
+        <Button
+            android:id="@+id/buttonUpload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Upload" />
 
-    <Button
-        android:text="Done "
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/doneButton"
-        android:layout_above="@+id/showDatabase"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="26dp" />
+    </LinearLayout>
 
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/linearLayout" />
 
 </RelativeLayout>
