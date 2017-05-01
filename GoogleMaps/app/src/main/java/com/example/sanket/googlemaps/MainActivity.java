@@ -6,15 +6,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
@@ -32,15 +37,20 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.io.IOException;
+
 import static com.google.android.gms.wearable.DataMap.TAG;
 
 public class MainActivity extends Activity {
+
 
     private final int SPLASH_DISPLAY_LENGTH = 1000;
     ProgressBar progressBar;
     Context context;
     LocationManager locationManager ;
     boolean GpsStatus ;
+    TextView textView;
+    //AlertDialog.Builder builder;
 
 
     @Override
@@ -56,16 +66,17 @@ public class MainActivity extends Activity {
                 @Override
                 public void run() {
                     // Create an Intent that will start the Menu-Activity.
-                    Intent mainIntent = new Intent(MainActivity.this,MapsActivity.class);
+                    Intent mainIntent = new Intent(MainActivity.this,SignUpActivity.class);
                     MainActivity.this.startActivity(mainIntent);
                     MainActivity.this.finish();
                 }
             }, SPLASH_DISPLAY_LENGTH);
+            textView.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.VISIBLE);
         }else {
             //check.setText("Location Services Is Disabled");
             //startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            final AlertDialog.Builder builder =
+             final AlertDialog.Builder builder =
                     new AlertDialog.Builder(MainActivity.this);
             final String action = Settings.ACTION_LOCATION_SOURCE_SETTINGS;
             final String message = "Enable either GPS or any other location"
@@ -85,6 +96,7 @@ public class MainActivity extends Activity {
         }
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -92,6 +104,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         progressBar = (ProgressBar) findViewById(R.id.button);
+        textView = (TextView) findViewById(R.id.textView);
 
         context = getApplicationContext();
 
@@ -134,9 +147,6 @@ public class MainActivity extends Activity {
                 }
                 */
 
-
-
-
         /*
         new Handler().postDelayed(new Runnable(){
             @Override
@@ -155,5 +165,6 @@ public class MainActivity extends Activity {
 
         GpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
+
 
 }

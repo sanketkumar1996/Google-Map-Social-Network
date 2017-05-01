@@ -21,6 +21,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+/*
 
 public class AddUserInfo extends AppCompatActivity implements View.OnClickListener{
     //a constant to track the file chooser intent
@@ -39,7 +40,7 @@ public class AddUserInfo extends AppCompatActivity implements View.OnClickListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_user_info);
+        //setContentView(R.layout.activity_add_user_info);
         //getting views from layout
         buttonChoose = (Button) findViewById(R.id.buttonChoose);
         buttonUpload = (Button) findViewById(R.id.buttonUpload);
@@ -146,3 +147,4 @@ public class AddUserInfo extends AppCompatActivity implements View.OnClickListen
         }
     }
 }
+*/

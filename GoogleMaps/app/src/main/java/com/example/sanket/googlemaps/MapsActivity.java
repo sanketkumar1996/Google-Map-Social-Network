@@ -92,6 +92,7 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
         autocompleteFragment.setBoundsBias(BOUNDS_MOUNTAIN_VIEW);
 
 
+
     }
 
 
@@ -112,6 +113,46 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+            if(mMap != null) {
+                mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+                    @Override
+                    public View getInfoWindow(Marker marker) {
+                        View view = getLayoutInflater().inflate(R.layout.info_window, null);
+
+                        TextView desc = (TextView) view.findViewById(R.id.desc);
+                        Button add = (Button) view.findViewById(R.id.add);
+                        TextView edit = (TextView) view.findViewById(R.id.snippet);
+                        LatLng markerlatlng = marker.getPosition();
+
+
+                        desc.setText(marker.getTitle());
+                        edit.setText(marker.getSnippet());
+
+
+                        add.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                startActivity(new Intent(MapsActivity.this, AddImage.class));
+                            }
+                        });
+
+
+
+
+
+                        return view;
+                    }
+
+                    @Override
+                    public View getInfoContents(Marker marker) {
+                        return null;
+
+                    }
+                });
+            }
+
 
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -177,7 +218,7 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
             markerOptions.position(latLng);
             markerOptions.title(data);
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            mCurrLocationMarker = mMap.addMarker(markerOptions);
+            mMap.addMarker(markerOptions).setSnippet("I am here!");
             mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
         }
@@ -198,7 +239,7 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
         addFeature.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent userInfo = new Intent(MapsActivity.this, AddUserInfo.class);
+                Intent userInfo = new Intent(MapsActivity.this, AddImage.class);
                 latitude = location.getLatitude();
                 longitude = location.getLongitude();
                 userInfo.putExtra("Lati",latitude);
@@ -306,6 +347,7 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
         markerOptions.title((String) place.getName());
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
+        Toast.makeText(getApplicationContext(), "Lat: "+ placelatLng.latitude + " Longi: "+ placelatLng.longitude, Toast.LENGTH_SHORT).show();
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(placelatLng, 17.0f));
 
