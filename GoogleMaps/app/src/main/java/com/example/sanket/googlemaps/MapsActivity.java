@@ -7,6 +7,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -33,12 +34,16 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import android.Manifest;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -47,6 +52,9 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+
+import static com.example.sanket.googlemaps.R.id.button;
+import static com.example.sanket.googlemaps.R.id.start;
 
 public class MapsActivity extends FragmentActivity implements PlaceSelectionListener, OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
@@ -63,12 +71,35 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
             new LatLng(37.398160, -122.180831), new LatLng(37.430610, -121.972090));
     private TextView locationTextView;
     private TextView attributionsTextView;
+     private FirebaseAuth firebaseAuth;
 
     private double latitude, longitude;
 
+    private double polyLati, polyLongi;
 
 
-    Button addFeature;
+
+    Button addFeature, signOut, bounceButton;
+    boolean doubleBackToExitPressedOnce = false;
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +113,10 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
         attributionsTextView = (TextView) findViewById(R.id.txt_attributions);
 
         addFeature = (Button) findViewById(R.id.addFeature);
+        signOut = (Button)findViewById(R.id.signOut);
+        bounceButton = (Button)findViewById(button);
+
+
 
 
         // Method #1
@@ -114,6 +149,23 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        final FirebaseUser user = firebaseAuth.getCurrentUser();
+
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Toast.makeText(getApplicationContext(),user.getEmail().toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Sign Out", Toast.LENGTH_SHORT).show();
+                firebaseAuth.signOut();
+                finish();
+                startActivity(new Intent(MapsActivity.this, SignUpActivity.class));
+
+            }
+        });
+
             if(mMap != null) {
                 mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
@@ -130,17 +182,14 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
                         desc.setText(marker.getTitle());
                         edit.setText(marker.getSnippet());
 
-
-                        add.setOnClickListener(new View.OnClickListener() {
+                        /*add.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                Toast.makeText(getApplicationContext(),"Add con", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(MapsActivity.this, AddImage.class));
                             }
                         });
-
-
-
-
+                        */
 
                         return view;
                     }
@@ -151,6 +200,52 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
 
                     }
                 });
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        final LatLng markerPosition = marker.getPosition();
+
+                        bounceButton.setVisibility(View.VISIBLE);
+                        final Animation myAnim = AnimationUtils.loadAnimation(MapsActivity.this, R.anim.bounce);
+                        // Use bounce interpolator with amplitude 0.2 and frequency 20
+                        MyBounceInterpolator interpolator = new MyBounceInterpolator(0.2, 20);
+                        myAnim.setInterpolator(interpolator);
+
+                        bounceButton.startAnimation(myAnim);
+
+                        addFeature.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent userInfo = new Intent(MapsActivity.this, AddImage.class);
+                                userInfo.putExtra("Lati",markerPosition.latitude);
+                                userInfo.putExtra("Longi",markerPosition.longitude);
+                                startActivity(userInfo);
+                            }
+                        });
+
+                        bounceButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Intent intent = new Intent(getApplicationContext(), InfoActivity.class);
+                                intent.putExtra("Lati",markerPosition.latitude);
+                                intent.putExtra("Longi",markerPosition.longitude);
+                                startActivity(intent);
+                            }
+                        });
+
+
+
+                        return true;
+                    }
+
+                });
+                mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng latLng) {
+                        bounceButton.setVisibility(View.INVISIBLE);
+                    }
+                });
+
             }
 
 
@@ -212,8 +307,23 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
         //Place current location marker
          LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         Bundle extras = getIntent().getExtras();
-        if(extras != null) {
-            String data = extras.getString("AddedImage");
+        Double latiOnMarker = extras.getDouble("latiOnWhichMarker");
+        Double longiOnMarker = extras.getDouble("longiOnWhichMarker");
+        String data = extras.getString("heading");
+        if (data != null) {
+            MarkerOptions markerOptions = new MarkerOptions();
+            LatLng positionOnMarker = new LatLng(latiOnMarker,longiOnMarker);
+            markerOptions.position(positionOnMarker);
+            markerOptions.title(data);
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            mMap.addMarker(markerOptions).setSnippet("I am here!");
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
+        }
+       /* Bundle extras = getIntent().getExtras();
+        String data = extras.getString("AddedImage");
+        if(data != null) {
+            //String data = extras.getString("AddedImage");
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
             markerOptions.title(data);
@@ -222,8 +332,11 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
             mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
         }
+        */
         latitude = location.getLatitude();
         longitude = location.getLongitude();
+        polyLati = latitude;
+        polyLongi = longitude;
 
 
 
@@ -236,7 +349,7 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
         }
         String cityName = addresses.get(0).getAddressLine(0);
         Toast.makeText(getApplicationContext(), "Current Area: "+ cityName, Toast.LENGTH_SHORT).show();
-        addFeature.setOnClickListener(new View.OnClickListener() {
+        /*addFeature.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent userInfo = new Intent(MapsActivity.this, AddImage.class);
@@ -246,7 +359,9 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
                 userInfo.putExtra("Longi",longitude);
                 startActivity(userInfo);
             }
-        });
+        });*/
+
+
        /* MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("Current Position");
@@ -351,14 +466,16 @@ public class MapsActivity extends FragmentActivity implements PlaceSelectionList
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(placelatLng, 17.0f));
 
-        LatLng latLng = new LatLng(latitude, longitude);
+        LatLng polylatLng = new LatLng(polyLati, polyLongi);
 
         mMap.addPolyline(new PolylineOptions().add(
-                latLng,
+                polylatLng,
                 placelatLng)
                 .width(5)
                 .color(Color.GREEN)
         );
+        polyLati = placelatitude;
+        polyLongi = placelongitude;
 
     }
 

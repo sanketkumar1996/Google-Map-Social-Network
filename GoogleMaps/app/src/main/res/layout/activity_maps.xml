@@ -39,6 +39,31 @@
         android:autoLink="all"/>
 
     <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="27dp"
+        android:layout_marginBottom="23dp"
+        android:id="@+id/signOut"
+        android:text="Sign Out"
+        />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="didTapButton"
+        android:layout_centerHorizontal="true"
+        android:background="#00bcd4"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="23dp"
+        android:text="Show images"
+        android:textColor="@android:color/black"
+        android:visibility="invisible"
+        />
+
+    <Button
         android:text="+"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

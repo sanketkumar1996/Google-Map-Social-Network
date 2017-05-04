@@ -61,6 +61,7 @@ public class LoginActivity extends Activity {
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finish();
                 startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
             }
         });
@@ -68,6 +69,7 @@ public class LoginActivity extends Activity {
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                finish();
                 startActivity(new Intent(LoginActivity.this, ResetPasswordActivity.class));
             }
         });
@@ -75,7 +77,7 @@ public class LoginActivity extends Activity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = inputEmail.getText().toString();
+                final String email = inputEmail.getText().toString();
                 final String password = inputPassword.getText().toString();
 
                 if (TextUtils.isEmpty(email)) {
@@ -108,8 +110,10 @@ public class LoginActivity extends Activity {
                                     }
                                 } else {
                                     Intent intent = new Intent(LoginActivity.this, MapsActivity.class);
-                                    startActivity(intent);
+                                    intent.putExtra("username",email);
                                     finish();
+                                    startActivity(intent);
+
                                 }
                             }
                         });
